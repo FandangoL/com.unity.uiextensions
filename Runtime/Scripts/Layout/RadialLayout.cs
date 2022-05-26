@@ -32,6 +32,7 @@ namespace UnityEngine.UI.Extensions
         public float fDistance;
         [Range(0f, 360f)]
         public float MinAngle, MaxAngle, StartAngle;
+        public bool ChildrensRotation = false;
         public bool OnlyLayoutVisible = false;
         protected override void OnEnable() { base.OnEnable(); CalculateRadial(); }
         public override void SetLayoutHorizontal()
@@ -79,6 +80,7 @@ namespace UnityEngine.UI.Extensions
             float fOffsetAngle = (MaxAngle - MinAngle) / ChildrenToFormat;
 
             float fAngle = StartAngle;
+            float fRotationAngle = StartAngle - 90;
             for (int i = 0; i < transform.childCount; i++)
             {
                 RectTransform child = (RectTransform)transform.GetChild(i);
@@ -93,6 +95,15 @@ namespace UnityEngine.UI.Extensions
                     child.localPosition = vPos * fDistance;
                     //Force objects to be center aligned, this can be changed however I'd suggest you keep all of the objects with the same anchor points.
                     child.anchorMin = child.anchorMax = child.pivot = new Vector2(0.5f, 0.5f);
+                    if (ChildrensRotation)
+                    {
+                        child.rotation = Quaternion.AngleAxis(fRotationAngle, Vector3.forward);
+                        fRotationAngle += fOffsetAngle;
+                    }
+                    else
+                    {
+                        child.rotation = Quaternion.EulerAngles(Vector3.zero);
+                    }                    
                     fAngle += fOffsetAngle;
                 }
             }
